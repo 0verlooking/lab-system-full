@@ -2,7 +2,9 @@ package com.example.labsystem.service;
 
 import com.example.labsystem.domain.order.EquipmentOrder;
 import com.example.labsystem.domain.order.OrderStatus;
+import com.example.labsystem.domain.user.User;
 import com.example.labsystem.repository.EquipmentOrderRepository;
+import com.example.labsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EquipmentOrderService {
     private final EquipmentOrderRepository orderRepository;
+    private final UserRepository userRepository;
 
     public List<EquipmentOrder> getByStudentId(Long studentId) {
         return orderRepository.findByStudentId(studentId);
@@ -38,11 +41,13 @@ public class EquipmentOrderService {
     }
 
     @Transactional
-    public EquipmentOrder approve(Long id, String approvedBy) {
+    public EquipmentOrder approve(Long id, String username) {
         EquipmentOrder order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found: " + id));
+        User approver = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
         order.setStatus(OrderStatus.APPROVED);
-        order.setApprovedBy(approvedBy);
+        order.setApprovedBy(approver);
         order.setApprovedAt(LocalDateTime.now());
         return orderRepository.save(order);
     }
