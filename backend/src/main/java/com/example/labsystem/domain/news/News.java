@@ -86,6 +86,13 @@ public class News {
     private Boolean active = true;
 
     /**
+     * Чи опублікована новина
+     */
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean published = false;
+
+    /**
      * Дата публікації
      */
     @Column(name = "published_at")
