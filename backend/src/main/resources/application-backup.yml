@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: lab-system-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lab_system
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+app:
+  jwt:
+    secret: VeryStrongSecretKeyForJWT_ChangeMe_1234567890
+    expiration: 3600000   # 1 година у мілісекундах

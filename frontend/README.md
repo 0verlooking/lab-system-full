@@ -1,0 +1,184 @@
+# Lab System Frontend
+
+Сучасний фронтенд додаток для системи управління лабораторіями, побудований з використанням React, TypeScript та Vite.
+
+## 🚀 Технології
+
+- **React 19** - бібліотека для побудови UI
+- **TypeScript** - типізована версія JavaScript
+- **Vite** - швидкий інструмент збірки
+- **React Router** - маршрутизація
+- **Axios** - HTTP клієнт
+- **CSS3** - стилізація
+
+## 📋 Функціональність
+
+### Для всіх користувачів:
+- ✅ Реєстрація та автентифікація
+- ✅ Перегляд лабораторій
+- ✅ Перегляд обладнання
+- ✅ Створення резервацій лабораторій
+- ✅ Перегляд власних резервацій
+
+### Для адміністраторів:
+- ✅ Управління лабораторіями (створення, редагування, видалення)
+- ✅ Управління обладнанням (створення, редагування, видалення)
+- ✅ Перегляд всіх резервацій
+- ✅ Підтвердження/відхилення резервацій
+- ✅ Повний контроль над системою
+
+## 🛠️ Встановлення
+
+### Передумови
+- Node.js 18+
+- npm або yarn
+
+### Кроки встановлення
+
+1. Клонування репозиторію:
+```bash
+git clone https://github.com/0verlooking/lab-system-frontend.git
+cd lab-system-frontend
+```
+
+2. Встановлення залежностей:
+```bash
+npm install
+```
+
+3. Налаштування змінних середовища:
+```bash
+cp .env.example .env
+```
+
+Відредагуйте `.env` файл:
+```env
+VITE_API_URL=http://localhost:8080/api
+NODE_ENV=development
+```
+
+4. Запуск у режимі розробки:
+```bash
+npm run dev
+```
+
+Додаток буде доступний за адресою: `http://localhost:5173`
+
+## 🏗️ Структура проекту
+
+```
+src/
+├── api/              # API клієнти та сервіси
+│   ├── http.ts       # Налаштування Axios
+│   ├── authApi.ts    # Автентифікація
+│   ├── labsApi.ts    # Лабораторії
+│   ├── equipmentApi.ts  # Обладнання
+│   └── reservationsApi.ts  # Резервації
+├── components/       # Компоненти React
+│   ├── layout/       # Компоненти макету
+│   └── routing/      # Маршрутизація
+├── context/          # React Context
+│   └── AuthContext.tsx  # Контекст автентифікації
+├── pages/            # Сторінки додатку
+│   ├── LoginPage.tsx
+│   ├── RegisterPage.tsx
+│   ├── LabsPage.tsx
+│   ├── EquipmentPage.tsx
+│   └── ReservationsPage.tsx
+├── router/           # Налаштування роутера
+├── types/            # TypeScript типи
+├── App.tsx           # Головний компонент
+└── main.tsx          # Точка входу
+```
+
+## 🐳 Docker
+
+### Збірка образу:
+```bash
+docker build -t lab-system-frontend .
+```
+
+### Запуск контейнера:
+```bash
+docker run -p 3000:80 lab-system-frontend
+```
+
+### Docker Compose:
+```bash
+docker-compose up -d
+```
+
+## 📦 Build для продакшну
+
+```bash
+npm run build
+```
+
+Зібрані файли будуть у папці `dist/`
+
+## 🔧 Доступні команди
+
+- `npm run dev` - запуск у режимі розробки
+- `npm run build` - збірка для продакшну
+- `npm run preview` - попередній перегляд продакшн збірки
+- `npm run lint` - перевірка коду з ESLint
+
+## 🔐 Автентифікація
+
+Система використовує JWT токени для автентифікації. Токен зберігається у localStorage і автоматично додається до всіх API запитів.
+
+### Тестові облікові записи:
+- **Адміністратор**: `admin` / `admin123`
+- **Студент**: `student1` / `password123`
+
+## 🌐 API Endpoints
+
+Фронтенд взаємодіє з наступними API endpoints:
+
+### Автентифікація
+- `POST /api/auth/login` - вхід
+- `POST /api/auth/register` - реєстрація
+
+### Лабораторії
+- `GET /api/labs` - список лабораторій
+- `POST /api/labs` - створення (admin)
+- `PUT /api/labs/:id` - оновлення (admin)
+- `DELETE /api/labs/:id` - видалення (admin)
+
+### Обладнання
+- `GET /api/equipment` - список обладнання
+- `GET /api/equipment/lab/:labId` - обладнання лабораторії
+- `POST /api/equipment` - створення (admin)
+- `PUT /api/equipment/:id` - оновлення (admin)
+- `DELETE /api/equipment/:id` - видалення (admin)
+
+### Резервації
+- `GET /api/reservations` - всі резервації (admin)
+- `GET /api/reservations/my` - мої резервації
+- `POST /api/reservations` - створення
+- `PUT /api/reservations/:id/status` - оновлення статусу (admin)
+- `DELETE /api/reservations/:id` - видалення
+
+## 🎨 UI/UX Features
+
+- ✨ Сучасний responsive дизайн
+- 🎯 Інтуїтивний інтерфейс
+- ⚡ Швидка навігація
+- 🔄 Loading states
+- ❌ Error handling
+- ✅ Success notifications
+- 🎭 Role-based UI
+
+## 🔗 Backend Integration
+
+Цей фронтенд працює з backend системою:
+- Repository: https://github.com/0verlooking/lab-system-backend
+- Stack: Spring Boot 3, PostgreSQL, JWT
+
+## 📝 Ліцензія
+
+MIT License
+
+## 👥 Автор
+
+Проект виконано в рамках курсової роботи

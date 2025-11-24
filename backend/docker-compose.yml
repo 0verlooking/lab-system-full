@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # PostgreSQL база даних
+  postgres:
+    image: postgres:16-alpine
+    container_name: lab-system-db
+    environment:
+      POSTGRES_DB: lab_system
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 7355
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lab-system-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Spring Boot додаток
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lab-system-backend
+    environment:
+      # Database configuration
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lab_system
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 7355
+
+      # JPA/Hibernate configuration
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+
+      # JWT configuration
+      APP_JWT_SECRET: $2a$10$R9rlQ9XjAuc.y5ltOx3hnO6Bpt/rjj3wA3.V1jYlxFfaPSm1bpJRq
+      APP_JWT_EXPIRATION: 3600000
+
+      # Logging
+      LOGGING_LEVEL_COM_EXAMPLE_LABSYSTEM: DEBUG
+
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - lab-system-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+networks:
+  lab-system-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
