@@ -47,7 +47,7 @@ export const Navbar: React.FC = () => {
                     {token && (
                         <>
                             <div className="navbar-user">
-                                <span className="navbar-role">
+                                <Link to="/profile" className="navbar-role hover:underline">
                                     {role === 'ADMIN'
                                         ? 'Адміністратор'
                                         : role === 'CURATOR'
@@ -55,8 +55,13 @@ export const Navbar: React.FC = () => {
                                         : role === 'LABORANT'
                                         ? 'Лаборант'
                                         : 'Студент'}
-                                </span>
+                                </Link>
                             </div>
+                            {role === 'ADMIN' && (
+                                <Link to="/admin" className="navbar-link">
+                                    Панель адміна
+                                </Link>
+                            )}
                             <button className="navbar-logout" onClick={handleLogout}>
                                 Вийти
                             </button>

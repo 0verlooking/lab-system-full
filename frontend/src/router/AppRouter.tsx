@@ -1,12 +1,17 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import HomePage from '../pages/HomePage';
 import RepositoryPage from '../pages/RepositoryPage';
 import ProjectDetailPage from '../pages/ProjectDetailPage';
+import ProjectFormPage from '../pages/ProjectFormPage';
 import { LabsPage } from '../pages/LabsPage';
-import { EquipmentPage } from '../pages/EquipmentPage';
+import EquipmentCatalogPage from '../pages/EquipmentCatalogPage';
+import CartPage from '../pages/CartPage';
+import DocumentPage from '../pages/DocumentPage';
+import AdminPanelPage from '../pages/AdminPanelPage';
+import ProfilePage from '../pages/ProfilePage';
 import { ReservationsPage } from '../pages/ReservationsPage';
 import { LabWorksPage } from '../pages/LabWorksPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -37,10 +42,28 @@ export const AppRouter: React.FC = () => {
             />
 
             <Route
+                path="/repository/new"
+                element={
+                    <PrivateRoute>
+                        <ProjectFormPage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
                 path="/repository/:id"
                 element={
                     <PrivateRoute>
                         <ProjectDetailPage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/repository/:id/edit"
+                element={
+                    <PrivateRoute>
+                        <ProjectFormPage />
                     </PrivateRoute>
                 }
             />
@@ -58,7 +81,43 @@ export const AppRouter: React.FC = () => {
                 path="/equipment"
                 element={
                     <PrivateRoute>
-                        <EquipmentPage />
+                        <EquipmentCatalogPage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/cart"
+                element={
+                    <PrivateRoute>
+                        <CartPage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/document/:projectId?"
+                element={
+                    <PrivateRoute>
+                        <DocumentPage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/admin"
+                element={
+                    <PrivateRoute>
+                        <AdminPanelPage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/profile"
+                element={
+                    <PrivateRoute>
+                        <ProfilePage />
                     </PrivateRoute>
                 }
             />
