@@ -59,28 +59,53 @@ public class DataInitializer implements CommandLineRunner {
 
     private void initUsers() {
         if (userRepository.findByUsername("admin").isEmpty()) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setRole(UserRole.ADMIN);
+            User admin = User.builder()
+                    .username("admin")
+                    .password(passwordEncoder.encode("admin123"))
+                    .role(UserRole.ADMIN)
+                    .firstName("Адміністратор")
+                    .lastName("Системи")
+                    .email("admin@lab.system")
+                    .phoneNumber("+380501234567")
+                    .active(true)
+                    .emailVerified(true)
+                    .build();
             userRepository.save(admin);
             log.info("Created admin user: admin/admin123");
         }
 
         if (userRepository.findByUsername("student").isEmpty()) {
-            User student = new User();
-            student.setUsername("student");
-            student.setPassword(passwordEncoder.encode("student123"));
-            student.setRole(UserRole.STUDENT);
+            User student = User.builder()
+                    .username("student")
+                    .password(passwordEncoder.encode("student123"))
+                    .role(UserRole.STUDENT)
+                    .firstName("Іван")
+                    .lastName("Петренко")
+                    .middleName("Олександрович")
+                    .email("student@example.com")
+                    .phoneNumber("+380501234568")
+                    .studentId("ST-2024-001")
+                    .active(true)
+                    .emailVerified(true)
+                    .build();
             userRepository.save(student);
             log.info("Created student user: student/student123");
         }
 
         if (userRepository.findByUsername("researcher").isEmpty()) {
-            User researcher = new User();
-            researcher.setUsername("researcher");
-            researcher.setPassword(passwordEncoder.encode("researcher123"));
-            researcher.setRole(UserRole.STUDENT);
+            User researcher = User.builder()
+                    .username("researcher")
+                    .password(passwordEncoder.encode("researcher123"))
+                    .role(UserRole.STUDENT)
+                    .firstName("Марія")
+                    .lastName("Коваленко")
+                    .middleName("Іванівна")
+                    .email("researcher@example.com")
+                    .phoneNumber("+380501234569")
+                    .studentId("ST-2024-002")
+                    .active(true)
+                    .emailVerified(true)
+                    .build();
             userRepository.save(researcher);
             log.info("Created researcher user: researcher/researcher123");
         }
