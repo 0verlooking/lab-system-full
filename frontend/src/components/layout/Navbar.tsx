@@ -18,28 +18,28 @@ export const Navbar: React.FC = () => {
     };
 
     if (!token) {
-        return null; // Don't show navbar on login/register pages
+        return null;
     }
 
     return (
         <nav className="navbar">
             <div className="navbar-container">
-                <Link to="/labs" className="navbar-brand">
+                <Link to="/" className="navbar-brand">
                     Lab System
                 </Link>
 
                 <div className="navbar-menu">
-                    <Link to="/labs" className={isActive('/labs')}>
-                        Лабораторії
+                    <Link to="/" className={isActive('/')}>
+                        Головна
+                    </Link>
+                    <Link to="/repository" className={isActive('/repository')}>
+                        Репозиторій
                     </Link>
                     <Link to="/equipment" className={isActive('/equipment')}>
-                        Обладнання
+                        Каталог
                     </Link>
-                    <Link to="/reservations" className={isActive('/reservations')}>
-                        Резервації
-                    </Link>
-                    <Link to="/labworks" className={isActive('/labworks')}>
-                        Лаб. роботи
+                    <Link to="/labs" className={isActive('/labs')}>
+                        Лабораторії
                     </Link>
                 </div>
 
@@ -50,8 +50,10 @@ export const Navbar: React.FC = () => {
                                 <span className="navbar-role">
                                     {role === 'ADMIN'
                                         ? 'Адміністратор'
-                                        : role === 'LAB_MANAGER'
-                                        ? 'Менеджер лабораторії'
+                                        : role === 'CURATOR'
+                                        ? 'Куратор'
+                                        : role === 'LABORANT'
+                                        ? 'Лаборант'
                                         : 'Студент'}
                                 </span>
                             </div>

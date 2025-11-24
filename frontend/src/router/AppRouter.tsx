@@ -2,6 +2,9 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
+import HomePage from '../pages/HomePage';
+import RepositoryPage from '../pages/RepositoryPage';
+import ProjectDetailPage from '../pages/ProjectDetailPage';
 import { LabsPage } from '../pages/LabsPage';
 import { EquipmentPage } from '../pages/EquipmentPage';
 import { ReservationsPage } from '../pages/ReservationsPage';
@@ -14,6 +17,33 @@ export const AppRouter: React.FC = () => {
         <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+
+            <Route
+                path="/"
+                element={
+                    <PrivateRoute>
+                        <HomePage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/repository"
+                element={
+                    <PrivateRoute>
+                        <RepositoryPage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/repository/:id"
+                element={
+                    <PrivateRoute>
+                        <ProjectDetailPage />
+                    </PrivateRoute>
+                }
+            />
 
             <Route
                 path="/labs"
@@ -51,7 +81,6 @@ export const AppRouter: React.FC = () => {
                 }
             />
 
-            <Route path="/" element={<Navigate to="/labs" replace />} />
             <Route path="*" element={<NotFoundPage />} />
         </Routes>
     );
