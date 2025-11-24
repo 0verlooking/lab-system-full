@@ -3,36 +3,36 @@ import type { LabWork, LabWorkCreateRequest, LabWorkUpdateRequest } from '../typ
 
 export const labWorksApi = {
     getAll: async (): Promise<LabWork[]> => {
-        const res = await http.get<LabWork[]>('/labworks');
+        const res = await http.get<LabWork[]>('labworks');
         return res.data;
     },
 
     getById: async (id: number): Promise<LabWork> => {
-        const res = await http.get<LabWork>(`/labworks/${id}`);
+        const res = await http.get<LabWork>(`labworks/${id}`);
         return res.data;
     },
 
     getPublished: async (): Promise<LabWork[]> => {
-        const res = await http.get<LabWork[]>('/labworks/published');
+        const res = await http.get<LabWork[]>('labworks/published');
         return res.data;
     },
 
     getMy: async (): Promise<LabWork[]> => {
-        const res = await http.get<LabWork[]>('/labworks/my');
+        const res = await http.get<LabWork[]>('labworks/my');
         return res.data;
     },
 
     create: async (labWork: LabWorkCreateRequest): Promise<LabWork> => {
-        const res = await http.post<LabWork>('/labworks', labWork);
+        const res = await http.post<LabWork>('labworks', labWork);
         return res.data;
     },
 
     update: async (id: number, labWork: LabWorkUpdateRequest): Promise<LabWork> => {
-        const res = await http.put<LabWork>(`/labworks/${id}`, labWork);
+        const res = await http.put<LabWork>(`labworks/${id}`, labWork);
         return res.data;
     },
 
     delete: async (id: number): Promise<void> => {
-        await http.delete(`/labworks/${id}`);
+        await http.delete(`labworks/${id}`);
     },
 };
