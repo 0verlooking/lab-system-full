@@ -42,15 +42,16 @@ export default function EquipmentCatalogPage() {
 
     const handleAddToCart = (item: Equipment) => {
         addToCart(item, 1);
-        // Show feedback
         const feedback = document.createElement('div');
         feedback.textContent = '✓ Додано до кошика';
-        feedback.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50';
+        feedback.style.cssText = 'position: fixed; top: 1rem; right: 1rem; background: linear-gradient(135deg, var(--success-500), var(--success-600)); color: white; padding: 1rem 1.5rem; border-radius: 10px; box-shadow: var(--shadow-xl); z-index: 9999; animation: slideIn 0.3s ease-out; font-weight: 600;';
         document.body.appendChild(feedback);
-        setTimeout(() => feedback.remove(), 2000);
+        setTimeout(() => {
+            feedback.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => feedback.remove(), 300);
+        }, 2000);
     };
 
-    // Filter and sort equipment
     const filteredEquipment = equipment
         .filter(item => {
             const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -83,185 +84,238 @@ export default function EquipmentCatalogPage() {
     };
 
     if (loading) {
-        return <div className="p-8">Завантаження...</div>;
+        return (
+            <div className="page">
+                <div className="loading">
+                    <div className="spinner"></div>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="p-8">
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold">Каталог обладнання</h1>
-                    <p className="text-gray-600 mt-1">Огляд та замовлення обладнання</p>
-                </div>
-                <button
-                    onClick={() => navigate('/cart')}
-                    className="relative bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center gap-2"
-                >
-                    🛒 Кошик
-                    {getCartCount() > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
-                            {getCartCount()}
-                        </span>
-                    )}
-                </button>
-            </div>
-
-            {/* Filters Section */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {/* Search */}
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-medium mb-2">Пошук</label>
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Назва або інвентарний номер..."
-                            className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-
-                    {/* Lab Filter */}
+        <div className="page">
+            <div className="container">
+                <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                        <label className="block text-sm font-medium mb-2">Лабораторія</label>
-                        <select
-                            value={selectedLab}
-                            onChange={(e) => setSelectedLab(e.target.value)}
-                            className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="all">Всі лабораторії</option>
-                            {labs.map(lab => (
-                                <option key={lab.id} value={lab.id.toString()}>
-                                    {lab.name}
-                                </option>
-                            ))}
-                        </select>
+                        <h1 className="page-title">🔧 Каталог обладнання</h1>
+                        <p className="page-description">Огляд та замовлення обладнання для лабораторних робіт</p>
                     </div>
-
-                    {/* Status Filter */}
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Статус</label>
-                        <select
-                            value={selectedStatus}
-                            onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="all">Всі статуси</option>
-                            <option value={EquipmentStatus.AVAILABLE}>В наявності</option>
-                            <option value={EquipmentStatus.IN_USE}>Використовується</option>
-                            <option value={EquipmentStatus.MAINTENANCE}>На обслуговуванні</option>
-                            <option value={EquipmentStatus.BROKEN}>Зламане</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Sort */}
-                <div className="mt-4 flex items-center gap-3">
-                    <span className="text-sm font-medium">Сортувати за:</span>
                     <button
-                        onClick={() => setSortBy('name')}
-                        className={`px-3 py-1 rounded text-sm ${
-                            sortBy === 'name'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
+                        onClick={() => navigate('/cart')}
+                        className="btn btn-primary"
+                        style={{ position: 'relative', whiteSpace: 'nowrap' }}
                     >
-                        Назвою
-                    </button>
-                    <button
-                        onClick={() => setSortBy('status')}
-                        className={`px-3 py-1 rounded text-sm ${
-                            sortBy === 'status'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                    >
-                        Статусом
+                        🛒 Кошик
+                        {getCartCount() > 0 && (
+                            <span style={{
+                                position: 'absolute',
+                                top: '-8px',
+                                right: '-8px',
+                                background: 'linear-gradient(135deg, var(--danger-500), var(--danger-600))',
+                                color: 'white',
+                                fontSize: '0.75rem',
+                                fontWeight: 'bold',
+                                borderRadius: '999px',
+                                width: '24px',
+                                height: '24px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: 'var(--shadow-lg)',
+                                animation: 'pulse 2s infinite'
+                            }}>
+                                {getCartCount()}
+                            </span>
+                        )}
                     </button>
                 </div>
-            </div>
 
-            {/* Results Count */}
-            <div className="mb-4 text-gray-600">
-                Знайдено: {filteredEquipment.length} з {equipment.length}
-            </div>
+                {/* Filters Card */}
+                <div className="card" style={{ marginBottom: '2rem' }}>
+                    <h2 className="card-header">🔍 Фільтри та пошук</h2>
+                    <div className="grid grid-cols-1" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem' }}>
+                        <div className="form-group">
+                            <label className="form-label">Пошук</label>
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Назва або інвентарний номер..."
+                                className="form-input"
+                            />
+                        </div>
 
-            {/* Equipment Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredEquipment.map(item => (
-                    <div key={item.id} className="bg-white rounded-lg shadow hover:shadow-xl transition">
-                        <div className="p-6">
-                            {/* Equipment Image Placeholder */}
-                            <div className="w-full h-48 bg-gray-200 rounded mb-4 flex items-center justify-center">
-                                <span className="text-4xl">🔧</span>
-                            </div>
+                        <div className="form-group">
+                            <label className="form-label">Лабораторія</label>
+                            <select
+                                value={selectedLab}
+                                onChange={(e) => setSelectedLab(e.target.value)}
+                                className="form-select"
+                            >
+                                <option value="all">🏫 Всі лабораторії</option>
+                                {labs.map(lab => (
+                                    <option key={lab.id} value={lab.id.toString()}>
+                                        {lab.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
-                            {/* Equipment Info */}
-                            <h3 className="font-bold text-lg mb-2">{item.name}</h3>
-                            <p className="text-sm text-gray-600 mb-3">
-                                Інв. №: {item.inventoryNumber}
-                            </p>
-                            <p className="text-sm text-gray-600 mb-3">
-                                Лабораторія: {item.labName}
-                            </p>
-
-                            {/* Status Badge */}
-                            <div className="mb-4">
-                                <span className={`inline-block px-3 py-1 rounded text-sm ${
-                                    item.status === EquipmentStatus.AVAILABLE
-                                        ? 'bg-green-100 text-green-800'
-                                        : item.status === EquipmentStatus.IN_USE
-                                        ? 'bg-yellow-100 text-yellow-800'
-                                        : item.status === EquipmentStatus.MAINTENANCE
-                                        ? 'bg-blue-100 text-blue-800'
-                                        : 'bg-red-100 text-red-800'
-                                }`}>
-                                    {getStatusLabel(item.status)}
-                                </span>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="space-y-2">
-                                {item.status === EquipmentStatus.AVAILABLE ? (
-                                    <button
-                                        onClick={() => handleAddToCart(item)}
-                                        className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                    >
-                                        + Додати до кошика
-                                    </button>
-                                ) : (
-                                    <>
-                                        <button
-                                            disabled
-                                            className="w-full bg-gray-300 text-gray-600 px-4 py-2 rounded cursor-not-allowed"
-                                        >
-                                            Недоступно
-                                        </button>
-                                        {item.documentationLink && (
-                                            <a
-                                                href={item.documentationLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="block w-full text-center bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                                            >
-                                                📦 Замовити онлайн
-                                            </a>
-                                        )}
-                                    </>
-                                )}
-                            </div>
+                        <div className="form-group">
+                            <label className="form-label">Статус</label>
+                            <select
+                                value={selectedStatus}
+                                onChange={(e) => setSelectedStatus(e.target.value)}
+                                className="form-select"
+                            >
+                                <option value="all">Всі статуси</option>
+                                <option value={EquipmentStatus.AVAILABLE}>✓ В наявності</option>
+                                <option value={EquipmentStatus.IN_USE}>⏳ Використовується</option>
+                                <option value={EquipmentStatus.MAINTENANCE}>🔧 На обслуговуванні</option>
+                                <option value={EquipmentStatus.BROKEN}>⚠️ Зламане</option>
+                            </select>
                         </div>
                     </div>
-                ))}
-            </div>
 
-            {filteredEquipment.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
-                    <div className="text-6xl mb-4">🔍</div>
-                    <h3 className="text-xl font-bold mb-2">Нічого не знайдено</h3>
-                    <p>Спробуйте змінити параметри пошуку</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '2px solid var(--gray-100)' }}>
+                        <span style={{ fontWeight: '600', color: 'var(--gray-700)' }}>Сортувати:</span>
+                        <div className="btn-group">
+                            <button
+                                type="button"
+                                onClick={() => setSortBy('name')}
+                                className={sortBy === 'name' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'}
+                            >
+                                📝 За назвою
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setSortBy('status')}
+                                className={sortBy === 'status' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'}
+                            >
+                                📊 За статусом
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            )}
+
+                {/* Results Count */}
+                <div style={{
+                    marginBottom: '1.5rem',
+                    padding: '1rem',
+                    background: 'white',
+                    borderRadius: '10px',
+                    boxShadow: 'var(--shadow)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                }}>
+                    <span style={{ fontWeight: '600', color: 'var(--primary-600)' }}>
+                        Знайдено: {filteredEquipment.length}
+                    </span>
+                    <span style={{ color: 'var(--gray-500)' }}>з {equipment.length} одиниць</span>
+                </div>
+
+                {/* Equipment Grid */}
+                {filteredEquipment.length === 0 ? (
+                    <div className="empty-state">
+                        <div className="empty-state-icon">🔍</div>
+                        <h3 className="empty-state-title">Нічого не знайдено</h3>
+                        <p className="empty-state-description">
+                            Спробуйте змінити параметри пошуку або фільтрів
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+                        {filteredEquipment.map(item => (
+                            <div key={item.id} className="card" style={{ padding: '1.5rem' }}>
+                                {/* Equipment Image */}
+                                <div style={{
+                                    width: '100%',
+                                    height: '180px',
+                                    background: 'linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%)',
+                                    borderRadius: '10px',
+                                    marginBottom: '1.25rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    border: '2px solid var(--gray-200)'
+                                }}>
+                                    <span style={{ fontSize: '4rem' }}>🔧</span>
+                                </div>
+
+                                {/* Equipment Info */}
+                                <h3 style={{ fontWeight: '700', fontSize: '1.125rem', marginBottom: '0.75rem', color: 'var(--gray-800)' }}>
+                                    {item.name}
+                                </h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
+                                    <p style={{ fontSize: '0.875rem', color: 'var(--gray-600)' }}>
+                                        <span style={{ fontWeight: '600' }}>Інв. №:</span> {item.inventoryNumber}
+                                    </p>
+                                    <p style={{ fontSize: '0.875rem', color: 'var(--gray-600)' }}>
+                                        <span style={{ fontWeight: '600' }}>Лабораторія:</span> {item.labName}
+                                    </p>
+                                </div>
+
+                                {/* Status Badge */}
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <span className={
+                                        item.status === EquipmentStatus.AVAILABLE ? 'badge badge-available' :
+                                        item.status === EquipmentStatus.IN_USE ? 'badge badge-in-use' :
+                                        item.status === EquipmentStatus.MAINTENANCE ? 'badge badge-in-use' :
+                                        'badge badge-maintenance'
+                                    }>
+                                        {item.status === EquipmentStatus.AVAILABLE && '✓ '}
+                                        {item.status === EquipmentStatus.IN_USE && '⏳ '}
+                                        {item.status === EquipmentStatus.MAINTENANCE && '🔧 '}
+                                        {item.status === EquipmentStatus.BROKEN && '⚠️ '}
+                                        {getStatusLabel(item.status)}
+                                    </span>
+                                </div>
+
+                                {/* Actions */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                    {item.status === EquipmentStatus.AVAILABLE ? (
+                                        <button
+                                            onClick={() => handleAddToCart(item)}
+                                            className="btn btn-success"
+                                            style={{ width: '100%' }}
+                                        >
+                                            ➕ Додати до кошика
+                                        </button>
+                                    ) : (
+                                        <>
+                                            <button
+                                                disabled
+                                                className="btn"
+                                                style={{
+                                                    width: '100%',
+                                                    background: 'var(--gray-300)',
+                                                    color: 'var(--gray-600)',
+                                                    cursor: 'not-allowed'
+                                                }}
+                                            >
+                                                ❌ Недоступно
+                                            </button>
+                                            {item.documentationLink && (
+                                                <a
+                                                    href={item.documentationLink}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="btn btn-primary"
+                                                    style={{ width: '100%', textDecoration: 'none' }}
+                                                >
+                                                    📦 Замовити онлайн
+                                                </a>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

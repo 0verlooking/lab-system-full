@@ -55,7 +55,6 @@ export default function ProjectFormPage() {
             setTitle(project.title);
             setDescription(project.description || '');
             setSelectedEquipmentIds(project.requiredEquipment.map(e => e.id));
-            // isPublic will be added to LabWork type
         } catch (error) {
             console.error('Error loading project:', error);
         } finally {
@@ -120,208 +119,301 @@ export default function ProjectFormPage() {
     const selectedEquipment = allEquipment.filter(eq => selectedEquipmentIds.includes(eq.id));
 
     if (loading) {
-        return <div className="p-8">Завантаження...</div>;
+        return (
+            <div className="page">
+                <div className="loading">
+                    <div className="spinner"></div>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="p-8 max-w-4xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-3xl font-bold">
-                    {isEditMode ? 'Редагувати проект' : 'Створити проект'}
-                </h1>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="text-gray-600 hover:text-gray-900"
-                >
-                    ← Назад
-                </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Title */}
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Назва проекту <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-                        placeholder="Введіть назву проекту"
-                        required
-                    />
+        <div className="page">
+            <div className="container" style={{ maxWidth: '900px' }}>
+                <div className="page-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+                    <div>
+                        <h1 className="page-title">
+                            {isEditMode ? '✏️ Редагувати проект' : '✨ Створити проект'}
+                        </h1>
+                        <p className="page-description">
+                            {isEditMode ? 'Внесіть зміни до існуючого проекту' : 'Заповніть форму для створення нового проекту'}
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="btn btn-secondary btn-sm"
+                        style={{ whiteSpace: 'nowrap' }}
+                    >
+                        ← Назад
+                    </button>
                 </div>
 
-                {/* Description */}
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Опис та алгоритм роботи
-                    </label>
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        rows={10}
-                        className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-                        placeholder="Детальний опис проекту, алгоритм роботи, блок-схеми тощо..."
-                    />
-                </div>
-
-                {/* Photos Section */}
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Фотографії проекту
-                    </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {[
-                            { key: 'schema', label: 'Схема проекту' },
-                            { key: 'result', label: 'Результат роботи' },
-                            { key: 'algorithm', label: 'Блок-схема алгоритму' },
-                            { key: 'process', label: 'Процес виконання' }
-                        ].map(({ key, label }) => (
-                            <div key={key} className="border rounded p-4">
-                                <p className="text-sm font-medium mb-2">{label}</p>
-                                <div className="bg-gray-100 rounded h-32 flex items-center justify-center mb-2">
-                                    {photos[key as keyof typeof photos] ? (
-                                        <span className="text-sm text-green-600">
-                                            ✓ {photos[key as keyof typeof photos]?.name}
-                                        </span>
-                                    ) : (
-                                        <span className="text-gray-400">Без фото</span>
-                                    )}
-                                </div>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    {/* Basic Info Card */}
+                    <div className="card">
+                        <h2 className="card-header">📝 Основна інформація</h2>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <div className="form-group">
+                                <label className="form-label">
+                                    Назва проекту <span style={{ color: 'var(--danger-500)' }}>*</span>
+                                </label>
                                 <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handlePhotoChange(
-                                        key as keyof typeof photos,
-                                        e.target.files?.[0] || null
-                                    )}
-                                    className="text-sm"
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    className="form-input"
+                                    placeholder="Наприклад: Arduino метеостанція"
+                                    required
                                 />
                             </div>
-                        ))}
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">
-                        Примітка: Завантаження фото буде реалізовано в наступній версії
-                    </p>
-                </div>
 
-                {/* Selected Equipment Display */}
-                {selectedEquipment.length > 0 && (
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Обране обладнання ({selectedEquipment.length})
-                        </label>
-                        <div className="space-y-2">
-                            {selectedEquipment.map(eq => (
-                                <div
-                                    key={eq.id}
-                                    className="flex items-center justify-between p-3 bg-blue-50 rounded"
-                                >
-                                    <div>
-                                        <span className="font-medium">{eq.name}</span>
-                                        <span className="text-sm text-gray-600 ml-2">
-                                            (Інв. №: {eq.inventoryNumber})
-                                        </span>
+                            <div className="form-group">
+                                <label className="form-label">
+                                    Опис та алгоритм роботи
+                                </label>
+                                <textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    rows={10}
+                                    className="form-textarea"
+                                    placeholder="Детальний опис проекту, принцип роботи, використані технології, алгоритм виконання..."
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Photos Card */}
+                    <div className="card">
+                        <h2 className="card-header">📸 Фотографії проекту</h2>
+                        <div className="grid grid-cols-2" style={{ gap: '1.5rem' }}>
+                            {[
+                                { key: 'schema', label: '📐 Схема проекту', icon: '🔷' },
+                                { key: 'result', label: '✅ Результат роботи', icon: '🎯' },
+                                { key: 'algorithm', label: '🔄 Блок-схема', icon: '📊' },
+                                { key: 'process', label: '⚙️ Процес виконання', icon: '🔧' }
+                            ].map(({ key, label, icon }) => (
+                                <div key={key} style={{
+                                    padding: '1.5rem',
+                                    border: '2px dashed var(--gray-300)',
+                                    borderRadius: '12px',
+                                    background: 'var(--gray-50)',
+                                    transition: 'all var(--transition-base)'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.borderColor = 'var(--primary-400)';
+                                    e.currentTarget.style.background = 'var(--primary-50)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.borderColor = 'var(--gray-300)';
+                                    e.currentTarget.style.background = 'var(--gray-50)';
+                                }}>
+                                    <p style={{ fontWeight: '600', marginBottom: '1rem', color: 'var(--gray-700)' }}>{label}</p>
+                                    <div style={{
+                                        background: 'white',
+                                        borderRadius: '8px',
+                                        height: '120px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginBottom: '1rem',
+                                        border: '1px solid var(--gray-200)'
+                                    }}>
+                                        {photos[key as keyof typeof photos] ? (
+                                            <span style={{ color: 'var(--success-600)', fontWeight: '600' }}>
+                                                ✓ {photos[key as keyof typeof photos]?.name}
+                                            </span>
+                                        ) : (
+                                            <span style={{ fontSize: '3rem' }}>{icon}</span>
+                                        )}
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleEquipmentToggle(eq.id)}
-                                        className="text-red-600 hover:text-red-800"
-                                    >
-                                        Видалити
-                                    </button>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handlePhotoChange(
+                                            key as keyof typeof photos,
+                                            e.target.files?.[0] || null
+                                        )}
+                                        style={{ fontSize: '0.875rem' }}
+                                    />
                                 </div>
                             ))}
                         </div>
+                        <div className="alert alert-info" style={{ marginTop: '1rem' }}>
+                            💡 Завантаження фотографій буде повністю реалізовано в наступній версії
+                        </div>
                     </div>
-                )}
 
-                {/* Equipment Selector */}
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Додати обладнання
-                    </label>
-                    <input
-                        type="text"
-                        value={equipmentSearch}
-                        onChange={(e) => setEquipmentSearch(e.target.value)}
-                        placeholder="Пошук обладнання..."
-                        className="w-full px-4 py-2 border rounded mb-3"
-                    />
-                    <div className="border rounded max-h-64 overflow-y-auto">
-                        {filteredEquipment.length === 0 ? (
-                            <div className="p-4 text-center text-gray-500">
-                                Обладнання не знайдено
-                            </div>
-                        ) : (
-                            filteredEquipment.map(eq => (
-                                <div
-                                    key={eq.id}
-                                    className={`p-3 border-b hover:bg-gray-50 cursor-pointer ${
-                                        selectedEquipmentIds.includes(eq.id) ? 'bg-blue-50' : ''
-                                    }`}
-                                    onClick={() => handleEquipmentToggle(eq.id)}
-                                >
-                                    <div className="flex items-center justify-between">
+                    {/* Selected Equipment Card */}
+                    {selectedEquipment.length > 0 && (
+                        <div className="card">
+                            <h2 className="card-header">✅ Обране обладнання ({selectedEquipment.length})</h2>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {selectedEquipment.map(eq => (
+                                    <div
+                                        key={eq.id}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            padding: '1rem 1.25rem',
+                                            background: 'linear-gradient(135deg, var(--primary-50) 0%, var(--success-50) 100%)',
+                                            borderRadius: '10px',
+                                            border: '2px solid var(--primary-100)',
+                                            transition: 'all var(--transition-base)'
+                                        }}
+                                    >
                                         <div>
-                                            <span className="font-medium">{eq.name}</span>
-                                            <span className="text-sm text-gray-600 ml-2">
-                                                Інв. №: {eq.inventoryNumber}
+                                            <span style={{ fontWeight: '600', color: 'var(--gray-800)' }}>{eq.name}</span>
+                                            <span style={{ marginLeft: '0.75rem', color: 'var(--gray-600)', fontSize: '0.875rem' }}>
+                                                (Інв. №: {eq.inventoryNumber})
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`text-xs px-2 py-1 rounded ${
-                                                eq.status === 'AVAILABLE'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
-                                            }`}>
-                                                {eq.status === 'AVAILABLE' ? 'Доступно' : 'Недоступно'}
-                                            </span>
-                                            {selectedEquipmentIds.includes(eq.id) && (
-                                                <span className="text-blue-600">✓</span>
-                                            )}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleEquipmentToggle(eq.id)}
+                                            className="btn btn-danger btn-sm"
+                                        >
+                                            🗑️ Видалити
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Equipment Selector Card */}
+                    <div className="card">
+                        <h2 className="card-header">🔧 Додати обладнання</h2>
+                        <input
+                            type="text"
+                            value={equipmentSearch}
+                            onChange={(e) => setEquipmentSearch(e.target.value)}
+                            placeholder="🔍 Пошук обладнання за назвою або інвентарним номером..."
+                            className="form-input"
+                            style={{ marginBottom: '1.25rem' }}
+                        />
+                        <div style={{
+                            border: '2px solid var(--gray-200)',
+                            borderRadius: '10px',
+                            maxHeight: '400px',
+                            overflowY: 'auto',
+                            background: 'white'
+                        }}>
+                            {filteredEquipment.length === 0 ? (
+                                <div className="empty-state">
+                                    <div className="empty-state-icon">🔍</div>
+                                    <h3 className="empty-state-title">Обладнання не знайдено</h3>
+                                    <p className="empty-state-description">Спробуйте змінити критерії пошуку</p>
+                                </div>
+                            ) : (
+                                filteredEquipment.map(eq => (
+                                    <div
+                                        key={eq.id}
+                                        onClick={() => handleEquipmentToggle(eq.id)}
+                                        style={{
+                                            padding: '1rem 1.25rem',
+                                            borderBottom: '1px solid var(--gray-100)',
+                                            cursor: 'pointer',
+                                            transition: 'all var(--transition-fast)',
+                                            background: selectedEquipmentIds.includes(eq.id) ? 'var(--primary-50)' : 'transparent'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (!selectedEquipmentIds.includes(eq.id)) {
+                                                e.currentTarget.style.background = 'var(--gray-50)';
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (!selectedEquipmentIds.includes(eq.id)) {
+                                                e.currentTarget.style.background = 'transparent';
+                                            }
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <div>
+                                                <span style={{ fontWeight: '600', color: 'var(--gray-800)' }}>{eq.name}</span>
+                                                <span style={{ marginLeft: '0.75rem', color: 'var(--gray-600)', fontSize: '0.875rem' }}>
+                                                    Інв. №: {eq.inventoryNumber}
+                                                </span>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                <span className={
+                                                    eq.status === 'AVAILABLE' ? 'badge badge-available' : 'badge badge-in-use'
+                                                }>
+                                                    {eq.status === 'AVAILABLE' ? '✓ Доступно' : '⚠ Недоступно'}
+                                                </span>
+                                                {selectedEquipmentIds.includes(eq.id) && (
+                                                    <span style={{ color: 'var(--primary-600)', fontWeight: 'bold', fontSize: '1.25rem' }}>✓</span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
-                        )}
+                                ))
+                            )}
+                        </div>
                     </div>
-                </div>
 
-                {/* Public/Private Toggle */}
-                <div className="flex items-center gap-3">
-                    <input
-                        type="checkbox"
-                        id="isPublic"
-                        checked={isPublic}
-                        onChange={(e) => setIsPublic(e.target.checked)}
-                        className="w-4 h-4"
-                    />
-                    <label htmlFor="isPublic" className="text-sm font-medium cursor-pointer">
-                        Зробити проект публічним (інші студенти зможуть його бачити)
-                    </label>
-                </div>
+                    {/* Settings Card */}
+                    <div className="card">
+                        <h2 className="card-header">⚙️ Налаштування</h2>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: '1rem',
+                            padding: '1.25rem',
+                            background: 'var(--primary-50)',
+                            borderRadius: '10px',
+                            border: '2px solid var(--primary-100)'
+                        }}>
+                            <input
+                                type="checkbox"
+                                id="isPublic"
+                                checked={isPublic}
+                                onChange={(e) => setIsPublic(e.target.checked)}
+                                style={{ marginTop: '0.25rem', width: '18px', height: '18px', cursor: 'pointer' }}
+                            />
+                            <label htmlFor="isPublic" style={{ cursor: 'pointer', flex: 1 }}>
+                                <div style={{ fontWeight: '600', marginBottom: '0.25rem', color: 'var(--gray-800)' }}>
+                                    🌐 Зробити проект публічним
+                                </div>
+                                <div style={{ fontSize: '0.875rem', color: 'var(--gray-600)' }}>
+                                    Інші студенти зможуть переглядати цей проект і використовувати його як основу для своїх робіт
+                                </div>
+                            </label>
+                        </div>
+                    </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-4 pt-4">
-                    <button
-                        type="submit"
-                        disabled={saving}
-                        className="flex-1 bg-blue-600 text-white px-6 py-3 rounded font-medium hover:bg-blue-700 disabled:bg-gray-400"
-                    >
-                        {saving ? 'Збереження...' : isEditMode ? 'Зберегти зміни' : 'Створити проект'}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => navigate(-1)}
-                        className="px-6 py-3 border rounded hover:bg-gray-50"
-                    >
-                        Скасувати
-                    </button>
-                </div>
-            </form>
+                    {/* Action Buttons */}
+                    <div style={{
+                        display: 'flex',
+                        gap: '1rem',
+                        paddingTop: '1rem',
+                        borderTop: '2px solid var(--gray-200)',
+                        position: 'sticky',
+                        bottom: '0',
+                        background: 'white',
+                        padding: '1.5rem',
+                        borderRadius: '12px',
+                        boxShadow: 'var(--shadow-xl)'
+                    }}>
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="btn btn-success"
+                            style={{ flex: 1 }}
+                        >
+                            {saving ? '⏳ Збереження...' : isEditMode ? '✓ Зберегти зміни' : '✨ Створити проект'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => navigate(-1)}
+                            className="btn btn-secondary"
+                        >
+                            ✕ Скасувати
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }
