@@ -1,11 +1,13 @@
 import type { Equipment } from './Equipment';
 
-export enum ReservationStatus {
-    PENDING = 'PENDING',
-    APPROVED = 'APPROVED',
-    REJECTED = 'REJECTED',
-    CANCELLED = 'CANCELLED'
-}
+export const ReservationStatus = {
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    REJECTED: 'REJECTED',
+    CANCELLED: 'CANCELLED'
+} as const;
+
+export type ReservationStatus = typeof ReservationStatus[keyof typeof ReservationStatus];
 
 export interface Reservation {
     id: number;

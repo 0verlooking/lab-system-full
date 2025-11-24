@@ -1,10 +1,12 @@
 import type { Equipment } from './Equipment';
 
-export enum LabWorkStatus {
-    DRAFT = 'DRAFT',
-    PUBLISHED = 'PUBLISHED',
-    ARCHIVED = 'ARCHIVED'
-}
+export const LabWorkStatus = {
+    DRAFT: 'DRAFT',
+    PUBLISHED: 'PUBLISHED',
+    ARCHIVED: 'ARCHIVED'
+} as const;
+
+export type LabWorkStatus = typeof LabWorkStatus[keyof typeof LabWorkStatus];
 
 export interface LabWork {
     id: number;

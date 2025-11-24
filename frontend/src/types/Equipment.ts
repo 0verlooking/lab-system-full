@@ -1,9 +1,11 @@
-export enum EquipmentStatus {
-    AVAILABLE = 'AVAILABLE',
-    IN_USE = 'IN_USE',
-    MAINTENANCE = 'MAINTENANCE',
-    BROKEN = 'BROKEN'
-}
+export const EquipmentStatus = {
+    AVAILABLE: 'AVAILABLE',
+    IN_USE: 'IN_USE',
+    MAINTENANCE: 'MAINTENANCE',
+    BROKEN: 'BROKEN'
+} as const;
+
+export type EquipmentStatus = typeof EquipmentStatus[keyof typeof EquipmentStatus];
 
 export interface Equipment {
     id: number;
