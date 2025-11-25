@@ -12,6 +12,8 @@ import CartPage from '../pages/CartPage';
 import DocumentPage from '../pages/DocumentPage';
 import AdminPanelPage from '../pages/AdminPanelPage';
 import ProfilePage from '../pages/ProfilePage';
+import NewsPage from '../pages/NewsPage';
+import OrdersPage from '../pages/OrdersPage';
 import { ReservationsPage } from '../pages/ReservationsPage';
 import { LabWorksPage } from '../pages/LabWorksPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -118,6 +120,24 @@ export const AppRouter: React.FC = () => {
                 element={
                     <PrivateRoute>
                         <ProfilePage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/news"
+                element={
+                    <PrivateRoute>
+                        <NewsPage />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route
+                path="/orders"
+                element={
+                    <PrivateRoute>
+                        <OrdersPage />
                     </PrivateRoute>
                 }
             />
