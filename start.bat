@@ -35,8 +35,10 @@ echo [96m Backend: [0m http://localhost:8080
 echo [96m Database:[0m localhost:5432
 echo.
 echo [93m Login credentials:[0m
-echo    Admin:   admin / admin123
-echo    Student: student / student123
+echo    Admin:     admin / admin123
+echo    Student:   student / student123
+echo.
+echo [96m Documentation:[0m docs/README.md
 echo.
 echo [96m View logs:[0m docker compose logs -f
 echo [96m Stop:     [0m docker compose down

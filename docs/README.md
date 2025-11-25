@@ -1,238 +1,363 @@
-# Документація Системи Управління Лабораторіями
+# Документація Курсової Роботи
 
-## Зміст документації
+**Система Управління Лабораторіями**
+Курсова робота з дисципліни "Проектування Програмного Забезпечення"
 
-### 1. [Технічне Завдання](TECHNICAL_SPECIFICATION.md)
-Повний опис системи, функціональні та нефункціональні вимоги, технічний стек, архітектура.
+---
 
-**Включає:**
-- Загальні відомості про проект
-- Цілі та завдання
+## 📚 Зміст документації
+
+Цей розділ містить повну технічну документацію проекту відповідно до вимог курсової роботи.
+
+---
+
+## 📋 Структура документації
+
+### 1. Технічне завдання (5 балів)
+📄 **[TECHNICAL_SPECIFICATION.md](TECHNICAL_SPECIFICATION.md)**
+
+**Зміст:**
+- Вступ та мета проекту
 - Функціональні вимоги
-- Нефункціональні вимоги (продуктивність, безпека, масштабованість)
-- Архітектура системи
-- Патерни проектування (Factory, Strategy, Observer, Builder)
-- SOLID принципи
-- Технічний стек
-- API endpoints
-- Оцінка виконання курсової роботи
+  - Аутентифікація та авторизація
+  - Управління лабораторіями
+  - Управління обладнанням
+  - Репозиторій проектів
+  - Система замовлень
+  - Панель адміністратора
+- Нефункціональні вимоги
+  - Продуктивність
+  - Безпека
+  - Надійність
+  - Масштабованість
+- Технічні обмеження та припущення
+- Критерії приймання
 
-### 2. [Use Case Діаграми](USE_CASES.md)
-Сценарії використання системи різними користувачами.
+**Ключові моменти:**
+- Детальний опис всіх функціональних можливостей
+- Вимоги до безпеки (JWT, BCrypt)
+- Вимоги до продуктивності та доступності
 
-**Охоплює:**
-- Аутентифікація
-- Управління лабораторіями (Адміністратор)
-- Резервація лабораторії (Студент)
-- Управління обладнанням (Адміністратор/Лаборант)
-- Погодження резервації (Адміністратор)
-- Перегляд обладнання (Студент)
-- Повна Use Case діаграма системи
+---
 
-### 3. [Проектування ORM та Структури БД](DATABASE_DESIGN.md)
-Детальний опис бази даних, схеми, зв'язків та ORM mapping.
+### 2. Use Case діаграми (5 балів)
+📄 **[USE_CASES.md](USE_CASES.md)**
 
-**Включає:**
-- ER діаграма
-- Опис всіх таблиць з полями та типами
+**Зміст:**
+- Актори системи
+  - Student (Студент)
+  - Admin (Адміністратор)
+  - Curator (Куратор)
+  - Laborant (Лаборант)
+- Use Case діаграма загальна
+- Детальні Use Cases:
+  - UC-1: Аутентифікація користувача
+  - UC-2: Перегляд каталогу обладнання
+  - UC-3: Створення резервації
+  - UC-4: Публікація проекту
+  - UC-5: Оформлення замовлення
+  - UC-6: Модерація проектів (Admin)
+  - UC-7: Управління користувачами (Admin)
+
+**Ключові моменти:**
+- Визначення всіх акторів та їх ролей
+- Опис взаємодії користувачів з системою
+- Передумови та постумови для кожного Use Case
+- Альтернативні сценарії
+
+---
+
+### 3. Проектування ORM та структури БД (10 балів)
+📄 **[DATABASE_DESIGN.md](DATABASE_DESIGN.md)**
+
+**Зміст:**
+- ER-діаграма бази даних
+- Опис таблиць:
+  - users (користувачі)
+  - labs (лабораторії)
+  - equipment (обладнання)
+  - reservations (резервації)
+  - lab_works (проекти)
+  - orders (замовлення)
+  - news (новини)
+- JPA Entity класи з анотаціями
+- Relationships (One-to-Many, Many-to-One, Many-to-Many)
 - Індекси та constraints
-- Enum values
-- ORM mapping (JPA/Hibernate annotations)
-- Типи зв'язків (One-to-Many, Many-to-One, Many-to-Many)
-- Cascading та Fetch Strategies
-- Hibernate конфігурація
-- Repository Layer (Spring Data JPA)
-- Нормалізація (3NF)
+- Стратегії генерації ID
+- Timestamps та аудит
 
-### 4. [Sequence Діаграми](SEQUENCE_DIAGRAMS.md)
-Діаграми послідовності для головних процесів системи.
+**Ключові моменти:**
+- PostgreSQL як СУБД
+- Hibernate як ORM
+- Використання JPA annotations
+- Lazy/Eager loading стратегії
+- Cascade operations
 
-**Процеси:**
-- Процес аутентифікації (успішний логін, невірний пароль)
-- Процес створення резервації
-- Процес погодження резервації
-- Процес додавання обладнання
-- Процес отримання списку лабораторій
-- Процес відхилення резервації
+---
 
-### 5. [Інструкція з Розгортання](DEPLOYMENT.md)
-Детальна інструкція з встановлення та розгортання системи.
+### 4. Wireframes інтерфейсу користувача (10 балів)
+📄 **[WIREFRAMES.md](WIREFRAMES.md)**
 
-**Розділи:**
-- Вимоги до системи
-- Встановлення залежностей (Linux, macOS, Windows)
-- Швидкий старт
-- Детальна конфігурація (.env файл)
-- Розгортання для розробки
-- Production розгортання
-- HTTPS налаштування
-- Моніторинг та логування
-- Troubleshooting (вирішення проблем)
-- Backup та відновлення
-- Оновлення системи
-- Масштабування
-- Безпека Production
+**Зміст:**
+- Огляд дизайн-системи
+  - Кольорова палітра (CSS variables)
+  - Компоненти (buttons, cards, forms, badges)
+  - Layout система (page, container, grid)
+- Wireframes головних сторінок:
+  - LoginPage (сторінка логіну)
+  - HomePage (головна сторінка)
+  - RepositoryPage (репозиторій проектів)
+  - ProjectDetailPage (деталі проекту)
+  - EquipmentCatalogPage (каталог обладнання)
+  - CartPage (кошик)
+  - AdminPanelPage (панель адміністратора)
+- Навігація та UX потоки
+- Адаптивний дизайн (responsive breakpoints)
+- Ключові UX принципи
 
-## Структура проекту
+**Ключові моменти:**
+- Єдина CSS система з змінними
+- Консистентний дизайн на всіх сторінках
+- Адаптивність для різних пристроїв
+- Доступність (accessibility)
 
-```
-lab-system-full/
-├── backend/                    # Spring Boot Backend
-│   ├── src/                   # Java source код
-│   ├── Dockerfile             # Docker образ backend
-│   ├── pom.xml               # Maven конфігурація
-│   └── README.md             # Backend документація
-│
-├── frontend/                   # React Frontend
-│   ├── src/                   # TypeScript source код
-│   ├── Dockerfile             # Docker образ frontend
-│   ├── package.json          # NPM залежності
-│   └── README.md             # Frontend документація
-│
-├── docs/                       # Документація (цей каталог)
-│   ├── TECHNICAL_SPECIFICATION.md
-│   ├── USE_CASES.md
-│   ├── DATABASE_DESIGN.md
-│   ├── SEQUENCE_DIAGRAMS.md
-│   ├── DEPLOYMENT.md
-│   └── README.md             # Цей файл
-│
-├── docker-compose.yml          # Docker Compose конфігурація
-├── .env                        # Змінні оточення (не в git)
-├── .env.example                # Приклад змінних оточення
-├── .gitignore
-├── Makefile                    # Команди для зручності
-└── README.md                   # Головний README проекту
-```
+---
 
-## Швидкі посилання
+### 5. Реалізація Front-End (10 балів)
+📄 **[../frontend/README.md](../frontend/README.md)**
 
-### Для розробників
-- [Головний README](../README.md) - Початок роботи з проектом
-- [Backend README](../backend/README.md) - Backend специфічна документація
-- [Frontend README](../frontend/README.md) - Frontend специфічна документація
+**Зміст:**
+- Архітектура React додатку
+  - Component structure
+  - Routing (React Router)
+  - State management (Context API)
+  - API integration (Axios)
+- Основні компоненти:
+  - Layout components (Header, Navbar)
+  - Page components
+  - Routing components (PrivateRoute)
+- Context API:
+  - AuthContext (аутентифікація)
+  - CartContext (кошик)
+- TypeScript типізація
+- Стилізація (CSS система)
+- Build та deployment
 
-### Для архітекторів
-- [Технічне Завдання](TECHNICAL_SPECIFICATION.md) - Повний технічний опис
-- [База Даних](DATABASE_DESIGN.md) - Схема та ORM
-- [Sequence Діаграми](SEQUENCE_DIAGRAMS.md) - Потоки виконання
+**Ключові моменти:**
+- React 18 + TypeScript
+- Vite як build tool
+- Axios для HTTP запитів
+- JWT токени в localStorage
+- Protected routes
 
-### Для DevOps
-- [Розгортання](DEPLOYMENT.md) - Інструкції з встановлення та налаштування
-- [docker-compose.yml](../docker-compose.yml) - Docker конфігурація
+---
 
-### Для бізнес-аналітиків
-- [Use Cases](USE_CASES.md) - Сценарії використання
-- [Технічне Завдання](TECHNICAL_SPECIFICATION.md) - Функціональні вимоги
+### 6. Реалізація архітектури ПЗ на Java з SOLID (15 балів)
+📄 **[../backend/README.md](../backend/README.md)**
 
-## Ключові технології
+**Зміст:**
+- Layered Architecture:
+  - Controller Layer (@RestController)
+  - Service Layer (@Service)
+  - Repository Layer (@Repository)
+  - Domain Layer (@Entity)
+- Застосування SOLID принципів:
+  - Single Responsibility Principle
+  - Open/Closed Principle
+  - Liskov Substitution Principle
+  - Interface Segregation Principle
+  - Dependency Inversion Principle
+- Spring Boot конфігурація
+- Security (JWT)
+- Exception handling
+- Validation
+- Transaction management
+
+**Ключові моменти:**
+- Spring Boot 3.3.4 + Java 17
+- Spring Data JPA
+- Spring Security
+- Constructor injection
+- Global exception handler
+
+---
+
+### 7. Архітектура ПЗ з патернами проектування (20 балів)
+📄 **[PATTERNS.md](PATTERNS.md)**
+
+**Зміст:**
+- Creational Patterns:
+  - Factory Pattern (NotificationFactory)
+  - Builder Pattern (Lombok @Builder)
+  - Singleton Pattern (Spring beans)
+- Behavioral Patterns:
+  - Strategy Pattern (ReservationValidator)
+  - Observer Pattern (Spring Events)
+- Structural Patterns:
+  - Decorator Pattern (Security filters)
+  - Proxy Pattern (JPA repositories)
+- Architectural Patterns:
+  - Layered Architecture
+  - DTO Pattern
+- Spring Framework Patterns:
+  - Dependency Injection
+  - Aspect-Oriented Programming (Transactions)
+
+**Ключові моменти:**
+- Детальні приклади коду для кожного патерну
+- Діаграми структури
+- Переваги використання кожного патерну
+- Інтеграція з Spring Framework
+
+---
+
+### 8. Sequence діаграми головних процесів (10 балів)
+📄 **[SEQUENCE_DIAGRAMS.md](SEQUENCE_DIAGRAMS.md)**
+
+**Зміст:**
+- Діаграми послідовностей для:
+  - SD-1: Аутентифікація користувача
+  - SD-2: Створення резервації лабораторії
+  - SD-3: Оформлення замовлення обладнання
+  - SD-4: Публікація проекту в репозиторій
+  - SD-5: Відправка повідомлень (Observer Pattern)
+- Для кожної діаграми:
+  - Учасники (actors, components)
+  - Послідовність викликів
+  - Альтернативні сценарії
+  - Повернення даних
+
+**Ключові моменти:**
+- Взаємодія між Frontend та Backend
+- REST API calls
+- Робота з базою даних
+- Pattern implementations в дії
+- Error handling flows
+
+---
+
+### 9. Docker контейнери та розгортання (10 балів)
+📄 **[DEPLOYMENT.md](DEPLOYMENT.md)**
+
+**Зміст:**
+- Архітектура контейнерів:
+  - Frontend container (Nginx + React build)
+  - Backend container (Java + Spring Boot)
+  - Database container (PostgreSQL)
+- Docker Compose конфігурація
+- Dockerfile для кожного сервісу
+- Environment variables
+- Volumes та networks
+- Health checks
+- Production deployment:
+  - Build process
+  - Environment configuration
+  - Database migrations
+  - Backup strategies
+- CI/CD процес (концепція)
+- Troubleshooting
+
+**Ключові моменти:**
+- Multi-container application
+- Docker Compose orchestration
+- Environment-based configuration
+- Production-ready setup
+- Easy deployment process
+
+---
+
+## 🎯 Критерії оцінювання
+
+| № | Критерій | Бали | Статус | Документ |
+|---|----------|------|--------|----------|
+| 1 | Технічне завдання | 5 | ✅ Готово | [TECHNICAL_SPECIFICATION.md](TECHNICAL_SPECIFICATION.md) |
+| 2 | Use Case діаграми | 5 | ✅ Готово | [USE_CASES.md](USE_CASES.md) |
+| 3 | Проектування ORM та БД | 10 | ✅ Готово | [DATABASE_DESIGN.md](DATABASE_DESIGN.md) |
+| 4 | Wireframes інтерфейсу | 10 | ✅ Готово | [WIREFRAMES.md](WIREFRAMES.md) |
+| 5 | Реалізація Front-End | 10 | ✅ Готово | [../frontend/README.md](../frontend/README.md) |
+| 6 | Архітектура на Java (SOLID) | 15 | ✅ Готово | [../backend/README.md](../backend/README.md) |
+| 7 | Патерни проектування | 20 | ✅ Готово | [PATTERNS.md](PATTERNS.md) |
+| 8 | Sequence діаграми | 10 | ✅ Готово | [SEQUENCE_DIAGRAMS.md](SEQUENCE_DIAGRAMS.md) |
+| 9 | Docker та розгортання | 10 | ✅ Готово | [DEPLOYMENT.md](DEPLOYMENT.md) |
+| 10 | Захист курсової роботи | 5 | 🟡 Очікується | - |
+| | **ВСЬОГО** | **100** | | |
+
+---
+
+## 📊 Технічний стек
 
 ### Backend
 - Java 17
 - Spring Boot 3.3.4 (Web, Data JPA, Security, Validation, Actuator)
 - PostgreSQL 16
+- Hibernate ORM
 - JWT Authentication
+- Lombok
 - Maven
 
 ### Frontend
 - React 18
-- TypeScript 5
+- TypeScript
 - Vite
-- Axios
 - React Router
+- Axios
+- Context API
 
 ### DevOps
-- Docker & Docker Compose
+- Docker
+- Docker Compose
 - Nginx
-- PostgreSQL
-
-## Патерни проектування
-
-Система реалізує 4 основних патерни:
-
-1. **Factory Pattern** - Створення повідомлень
-2. **Strategy Pattern** - Валідація резервацій
-3. **Observer Pattern** - Система подій
-4. **Builder Pattern** - Створення entity об'єктів
-
-Детальніше в [Технічному Завданні](TECHNICAL_SPECIFICATION.md#53-патерни-проектування)
-
-## SOLID Принципи
-
-Всі принципи SOLID дотримані:
-- **S** - Single Responsibility
-- **O** - Open/Closed
-- **L** - Liskov Substitution
-- **I** - Interface Segregation
-- **D** - Dependency Inversion
-
-Детальніше в [Технічному Завданні](TECHNICAL_SPECIFICATION.md#54-solid-принципи)
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Реєстрація
-- `POST /api/auth/login` - Вхід
-
-### Labs
-- `GET /api/labs` - Список лабораторій
-- `POST /api/labs` - Створення (ADMIN)
-- `PUT /api/labs/{id}` - Оновлення (ADMIN)
-- `DELETE /api/labs/{id}` - Видалення (ADMIN)
-
-### Equipment
-- `GET /api/equipment/lab/{labId}` - Обладнання лабораторії
-- `POST /api/equipment` - Додавання (ADMIN)
-
-### Reservations
-- `POST /api/reservations` - Створення резервації
-- `GET /api/reservations/my` - Мої резервації
-- `PUT /api/reservations/{id}/status` - Зміна статусу (ADMIN)
-
-Повна документація API в [README.md](../README.md#-api-документація)
-
-## Тестові дані
-
-При запуску автоматично створюються:
-
-**Користувачі:**
-- Admin: `admin` / `admin123`
-- Student: `student` / `student123`
-
-**Лабораторії:**
-1. Computer Lab A (30 місць)
-2. Physics Lab (20 місць)
-3. Chemistry Lab (25 місць)
-
-**Обладнання:**
-1. Dell OptiPlex 7090 (AVAILABLE)
-2. HP ProDesk 600 (AVAILABLE)
-3. Lenovo ThinkCentre (MAINTENANCE)
-
-## Контакти та підтримка
-
-### Для питань по проекту:
-- Перегляньте документацію вище
-- Створіть issue на GitHub
-- Перегляньте [Troubleshooting](DEPLOYMENT.md#troubleshooting)
-
-### Для контрибуції:
-1. Fork репозиторій
-2. Створіть feature branch
-3. Коміт змін
-4. Push до branch
-5. Створіть Pull Request
-
-## Ліцензія
-
-MIT License
-
-## Автор
-
-Курсова робота з дисципліни "Проектування Програмного Забезпечення"
+- Git
 
 ---
 
-**Остання актуалізація:** 2024
+## 🚀 Швидкий старт
 
-**Версія документації:** 1.0
+1. **Клонувати репозиторій:**
+   ```bash
+   git clone <repository-url>
+   cd lab-system-full
+   ```
+
+2. **Запустити через Docker:**
+   ```bash
+   # Windows
+   start.bat
+
+   # Linux/Mac
+   docker compose up -d --build
+   ```
+
+3. **Відкрити додаток:**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8080
+   - Database: localhost:5432
+
+4. **Тестові дані:**
+   - Admin: `admin` / `admin123`
+   - Student: `student` / `student123`
+
+---
+
+## 📖 Додаткові ресурси
+
+- **Головний README**: [../README.md](../README.md)
+- **Backend детальна документація**: [../backend/README.md](../backend/README.md)
+- **Frontend детальна документація**: [../frontend/README.md](../frontend/README.md)
+- **API Endpoints**: Описані в [../backend/README.md](../backend/README.md)
+
+---
+
+## 📝 Примітки
+
+Всі діаграми створені у текстовому форматі (ASCII art) для сумісності з Markdown.
+Для захисту курсової рекомендується:
+1. Ознайомитись з усіма розділами документації
+2. Розуміти архітектурні рішення
+3. Вміти пояснити вибір патернів проектування
+4. Підготувати демонстрацію роботи системи
+
+---
+
+**Автор:** Курсова робота з дисципліни "Проектування Програмного Забезпечення"
+**Рік:** 2024-2025
