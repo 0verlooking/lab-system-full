@@ -134,17 +134,6 @@ export default function AdminPanelPage() {
         setInviteEmail('');
     };
 
-    const handleChangeUserRole = async (userId: number, newRole: string) => {
-        if (!confirm(`Змінити роль користувача на ${newRole}?`)) {
-            return;
-        }
-
-        // In real app, call API
-        console.log('Changing user role:', { userId, newRole });
-        alert('Роль користувача змінено!');
-        loadData();
-    };
-
     const handleToggleUserActive = async (userId: number) => {
         // In real app, call API
         console.log('Toggling user active:', userId);
@@ -185,354 +174,366 @@ export default function AdminPanelPage() {
         p.authorName.toLowerCase().includes(projectSearch.toLowerCase())
     );
 
+    const getRoleBadge = (roleValue: string) => {
+        switch (roleValue) {
+            case 'ADMIN':
+                return <span className="badge badge-rejected">👑 Адміністратор</span>;
+            case 'CURATOR':
+                return <span className="badge badge-in-use">👨‍🏫 Куратор</span>;
+            case 'LABORANT':
+                return <span className="badge badge-available">🔬 Лаборант</span>;
+            case 'STUDENT':
+                return <span className="badge badge-approved">🎓 Студент</span>;
+            default:
+                return <span className="badge badge-pending">{roleValue}</span>;
+        }
+    };
+
+    const getProjectStatusBadge = (status: string) => {
+        switch (status) {
+            case 'PUBLISHED':
+                return <span className="badge badge-approved">✓ Опубліковано</span>;
+            case 'DRAFT':
+                return <span className="badge badge-pending">📝 Чернетка</span>;
+            case 'ARCHIVED':
+                return <span className="badge" style={{ background: 'var(--gray-100)', color: 'var(--gray-700)' }}>📦 Архів</span>;
+            default:
+                return <span className="badge badge-pending">{status}</span>;
+        }
+    };
+
     return (
-        <div className="p-8">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold mb-2">Панель адміністратора</h1>
-                <p className="text-gray-600">Управління групами, користувачами та проектами</p>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex gap-2 mb-6 border-b">
-                <button
-                    onClick={() => setActiveTab('groups')}
-                    className={`px-6 py-3 font-medium ${
-                        activeTab === 'groups'
-                            ? 'border-b-2 border-blue-600 text-blue-600'
-                            : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                >
-                    👥 Групи
-                </button>
-                <button
-                    onClick={() => setActiveTab('users')}
-                    className={`px-6 py-3 font-medium ${
-                        activeTab === 'users'
-                            ? 'border-b-2 border-blue-600 text-blue-600'
-                            : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                >
-                    👤 Користувачі
-                </button>
-                <button
-                    onClick={() => setActiveTab('projects')}
-                    className={`px-6 py-3 font-medium ${
-                        activeTab === 'projects'
-                            ? 'border-b-2 border-blue-600 text-blue-600'
-                            : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                >
-                    📁 Проекти
-                </button>
-            </div>
-
-            {/* Groups Tab */}
-            {activeTab === 'groups' && (
-                <div className="space-y-6">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-bold">Управління групами</h2>
-                        <button
-                            onClick={() => setShowGroupForm(!showGroupForm)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                        >
-                            + Створити групу
-                        </button>
-                    </div>
-
-                    {showGroupForm && (
-                        <div className="bg-white rounded-lg shadow p-6">
-                            <h3 className="font-bold mb-4">Нова група</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Назва групи</label>
-                                    <input
-                                        type="text"
-                                        value={groupName}
-                                        onChange={(e) => setGroupName(e.target.value)}
-                                        placeholder="Наприклад: ІПЗ-21"
-                                        className="w-full px-4 py-2 border rounded"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Рік вступу</label>
-                                    <input
-                                        type="number"
-                                        value={enrollmentYear}
-                                        onChange={(e) => setEnrollmentYear(Number(e.target.value))}
-                                        className="w-full px-4 py-2 border rounded"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex gap-3 mt-4">
-                                <button
-                                    onClick={handleCreateGroup}
-                                    className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-                                >
-                                    Створити
-                                </button>
-                                <button
-                                    onClick={() => setShowGroupForm(false)}
-                                    className="border px-6 py-2 rounded hover:bg-gray-50"
-                                >
-                                    Скасувати
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
-                        <table className="w-full">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Назва</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Куратор</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Рік вступу</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Студентів</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Статус</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Дії</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y">
-                                {groups.map(group => (
-                                    <tr key={group.id}>
-                                        <td className="px-6 py-4 font-medium">{group.name}</td>
-                                        <td className="px-6 py-4">{group.curatorName || '-'}</td>
-                                        <td className="px-6 py-4">{group.enrollmentYear}</td>
-                                        <td className="px-6 py-4">{group.studentCount}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded text-xs ${
-                                                group.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                                            }`}>
-                                                {group.active ? 'Активна' : 'Неактивна'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => handleToggleGroupActive(group.id)}
-                                                    className="text-sm text-blue-600 hover:underline"
-                                                >
-                                                    {group.active ? 'Деактивувати' : 'Активувати'}
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteGroup(group.id)}
-                                                    className="text-sm text-red-600 hover:underline"
-                                                >
-                                                    Видалити
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+        <div className="page">
+            <div className="container">
+                <div className="page-header">
+                    <h1 className="page-title">🛡️ Панель адміністратора</h1>
+                    <p className="page-description">Управління групами, користувачами та проектами</p>
                 </div>
-            )}
 
-            {/* Users Tab */}
-            {activeTab === 'users' && (
-                <div className="space-y-6">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-bold">Управління користувачами</h2>
-                        <button
-                            onClick={() => setShowUserForm(!showUserForm)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                        >
-                            + Запросити користувача
-                        </button>
-                    </div>
+                {/* Tabs */}
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid var(--gray-200)', paddingBottom: '1rem' }}>
+                    <button
+                        onClick={() => setActiveTab('groups')}
+                        className={activeTab === 'groups' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'}
+                    >
+                        👥 Групи
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('users')}
+                        className={activeTab === 'users' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'}
+                    >
+                        👤 Користувачі
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('projects')}
+                        className={activeTab === 'projects' ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'}
+                    >
+                        📁 Проекти
+                    </button>
+                </div>
 
-                    {showUserForm && (
-                        <div className="bg-white rounded-lg shadow p-6">
-                            <h3 className="font-bold mb-4">Запрошення користувача</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Email</label>
-                                    <input
-                                        type="email"
-                                        value={inviteEmail}
-                                        onChange={(e) => setInviteEmail(e.target.value)}
-                                        placeholder="user@example.com"
-                                        className="w-full px-4 py-2 border rounded"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Роль</label>
-                                    <select
-                                        value={selectedRole}
-                                        onChange={(e) => setSelectedRole(e.target.value)}
-                                        className="w-full px-4 py-2 border rounded"
-                                    >
-                                        <option value="STUDENT">Студент</option>
-                                        <option value="CURATOR">Куратор</option>
-                                        <option value="LABORANT">Лаборант</option>
-                                        <option value="ADMIN">Адміністратор</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="flex gap-3 mt-4">
-                                <button
-                                    onClick={handleInviteUser}
-                                    className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-                                >
-                                    Надіслати запрошення
-                                </button>
-                                <button
-                                    onClick={() => setShowUserForm(false)}
-                                    className="border px-6 py-2 rounded hover:bg-gray-50"
-                                >
-                                    Скасувати
-                                </button>
-                            </div>
+                {/* Groups Tab */}
+                {activeTab === 'groups' && (
+                    <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>Управління групами</h2>
+                            <button
+                                onClick={() => setShowGroupForm(!showGroupForm)}
+                                className="btn btn-primary"
+                            >
+                                + Створити групу
+                            </button>
                         </div>
-                    )}
 
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
-                        <table className="w-full">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Ім'я</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Email</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Роль</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Група</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Статус</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Дії</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y">
-                                {users.map(user => (
-                                    <tr key={user.id}>
-                                        <td className="px-6 py-4">
-                                            <div>
-                                                <div className="font-medium">{user.firstName} {user.lastName}</div>
-                                                <div className="text-sm text-gray-500">@{user.username}</div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">{user.email}</td>
-                                        <td className="px-6 py-4">
+                        {showGroupForm && (
+                            <div className="card" style={{ marginBottom: '1.5rem' }}>
+                                <h3 className="card-header">Нова група</h3>
+                                <div className="form">
+                                    <div className="grid grid-cols-2">
+                                        <div className="form-group">
+                                            <label className="form-label">Назва групи</label>
+                                            <input
+                                                type="text"
+                                                value={groupName}
+                                                onChange={(e) => setGroupName(e.target.value)}
+                                                placeholder="Наприклад: ІПЗ-21"
+                                                className="form-input"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Рік вступу</label>
+                                            <input
+                                                type="number"
+                                                value={enrollmentYear}
+                                                onChange={(e) => setEnrollmentYear(Number(e.target.value))}
+                                                className="form-input"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                        <button
+                                            onClick={handleCreateGroup}
+                                            className="btn btn-success"
+                                        >
+                                            Створити
+                                        </button>
+                                        <button
+                                            onClick={() => setShowGroupForm(false)}
+                                            className="btn btn-secondary"
+                                        >
+                                            Скасувати
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="table-container">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Назва</th>
+                                        <th>Куратор</th>
+                                        <th>Рік вступу</th>
+                                        <th>Студентів</th>
+                                        <th>Статус</th>
+                                        <th>Дії</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {groups.map(group => (
+                                        <tr key={group.id}>
+                                            <td style={{ fontWeight: '600' }}>{group.name}</td>
+                                            <td>{group.curatorName || '-'}</td>
+                                            <td>{group.enrollmentYear}</td>
+                                            <td>{group.studentCount}</td>
+                                            <td>
+                                                {group.active ? (
+                                                    <span className="badge badge-approved">✓ Активна</span>
+                                                ) : (
+                                                    <span className="badge" style={{ background: 'var(--gray-100)', color: 'var(--gray-700)' }}>⏸ Неактивна</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                                    <button
+                                                        onClick={() => handleToggleGroupActive(group.id)}
+                                                        className="btn btn-sm btn-secondary"
+                                                    >
+                                                        {group.active ? 'Деактивувати' : 'Активувати'}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteGroup(group.id)}
+                                                        className="btn btn-sm btn-danger"
+                                                    >
+                                                        Видалити
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* Users Tab */}
+                {activeTab === 'users' && (
+                    <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>Управління користувачами</h2>
+                            <button
+                                onClick={() => setShowUserForm(!showUserForm)}
+                                className="btn btn-primary"
+                            >
+                                + Запросити користувача
+                            </button>
+                        </div>
+
+                        {showUserForm && (
+                            <div className="card" style={{ marginBottom: '1.5rem' }}>
+                                <h3 className="card-header">Запрошення користувача</h3>
+                                <div className="form">
+                                    <div className="grid grid-cols-2">
+                                        <div className="form-group">
+                                            <label className="form-label">Email</label>
+                                            <input
+                                                type="email"
+                                                value={inviteEmail}
+                                                onChange={(e) => setInviteEmail(e.target.value)}
+                                                placeholder="user@example.com"
+                                                className="form-input"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="form-label">Роль</label>
                                             <select
-                                                value={user.role}
-                                                onChange={(e) => handleChangeUserRole(user.id, e.target.value)}
-                                                className="px-2 py-1 border rounded text-sm"
+                                                value={selectedRole}
+                                                onChange={(e) => setSelectedRole(e.target.value)}
+                                                className="form-input"
                                             >
                                                 <option value="STUDENT">Студент</option>
                                                 <option value="CURATOR">Куратор</option>
                                                 <option value="LABORANT">Лаборант</option>
                                                 <option value="ADMIN">Адміністратор</option>
                                             </select>
-                                        </td>
-                                        <td className="px-6 py-4">{user.groupName || '-'}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded text-xs ${
-                                                user.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                                            }`}>
-                                                {user.active ? 'Активний' : 'Заблокований'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => handleToggleUserActive(user.id)}
-                                                    className="text-sm text-blue-600 hover:underline"
-                                                >
-                                                    {user.active ? 'Заблокувати' : 'Розблокувати'}
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteUser(user.id)}
-                                                    className="text-sm text-red-600 hover:underline"
-                                                >
-                                                    Видалити
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                        <button
+                                            onClick={handleInviteUser}
+                                            className="btn btn-success"
+                                        >
+                                            Надіслати запрошення
+                                        </button>
+                                        <button
+                                            onClick={() => setShowUserForm(false)}
+                                            className="btn btn-secondary"
+                                        >
+                                            Скасувати
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-            {/* Projects Tab */}
-            {activeTab === 'projects' && (
-                <div className="space-y-6">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-bold">Управління проектами</h2>
-                        <input
-                            type="text"
-                            value={projectSearch}
-                            onChange={(e) => setProjectSearch(e.target.value)}
-                            placeholder="Пошук проектів..."
-                            className="px-4 py-2 border rounded w-64"
-                        />
-                    </div>
-
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
-                        <table className="w-full">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Назва</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Автор</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Дата створення</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Статус</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Видимість</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium">Дії</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y">
-                                {filteredProjects.map(project => (
-                                    <tr key={project.id}>
-                                        <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => navigate(`/repository/${project.id}`)}
-                                                className="font-medium text-blue-600 hover:underline"
-                                            >
-                                                {project.title}
-                                            </button>
-                                        </td>
-                                        <td className="px-6 py-4">{project.authorName}</td>
-                                        <td className="px-6 py-4">
-                                            {new Date(project.createdAt).toLocaleDateString('uk-UA')}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded text-xs ${
-                                                project.status === 'PUBLISHED'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : project.status === 'DRAFT'
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : 'bg-gray-100 text-gray-800'
-                                            }`}>
-                                                {project.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => handleToggleProjectPublic(project.id)}
-                                                className={`px-2 py-1 rounded text-xs ${
-                                                    project.isPublic
-                                                        ? 'bg-blue-100 text-blue-800'
-                                                        : 'bg-gray-100 text-gray-800'
-                                                }`}
-                                            >
-                                                {project.isPublic ? '🌐 Публічний' : '🔒 Приватний'}
-                                            </button>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => handleArchiveProject(project.id)}
-                                                className="text-sm text-orange-600 hover:underline"
-                                            >
-                                                Архівувати
-                                            </button>
-                                        </td>
+                        <div className="table-container">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Ім'я</th>
+                                        <th>Email</th>
+                                        <th>Роль</th>
+                                        <th>Група</th>
+                                        <th>Статус</th>
+                                        <th>Дії</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {users.map(user => (
+                                        <tr key={user.id}>
+                                            <td>
+                                                <div>
+                                                    <div style={{ fontWeight: '600' }}>{user.firstName} {user.lastName}</div>
+                                                    <div style={{ fontSize: '0.875rem', color: 'var(--gray-500)' }}>@{user.username}</div>
+                                                </div>
+                                            </td>
+                                            <td>{user.email}</td>
+                                            <td>
+                                                {getRoleBadge(user.role)}
+                                            </td>
+                                            <td>{user.groupName || '-'}</td>
+                                            <td>
+                                                {user.active ? (
+                                                    <span className="badge badge-approved">✓ Активний</span>
+                                                ) : (
+                                                    <span className="badge badge-rejected">⛔ Заблокований</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                                    <button
+                                                        onClick={() => handleToggleUserActive(user.id)}
+                                                        className="btn btn-sm btn-secondary"
+                                                    >
+                                                        {user.active ? 'Заблокувати' : 'Розблокувати'}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteUser(user.id)}
+                                                        className="btn btn-sm btn-danger"
+                                                    >
+                                                        Видалити
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+
+                {/* Projects Tab */}
+                {activeTab === 'projects' && (
+                    <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: '700' }}>Управління проектами</h2>
+                            <input
+                                type="text"
+                                value={projectSearch}
+                                onChange={(e) => setProjectSearch(e.target.value)}
+                                placeholder="🔍 Пошук проектів..."
+                                className="form-input"
+                                style={{ width: '350px' }}
+                            />
+                        </div>
+
+                        <div className="table-container">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Назва</th>
+                                        <th>Автор</th>
+                                        <th>Дата створення</th>
+                                        <th>Статус</th>
+                                        <th>Видимість</th>
+                                        <th>Дії</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredProjects.map(project => (
+                                        <tr key={project.id}>
+                                            <td>
+                                                <button
+                                                    onClick={() => navigate(`/repository/${project.id}`)}
+                                                    style={{
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        color: 'var(--primary-600)',
+                                                        fontWeight: '600',
+                                                        cursor: 'pointer',
+                                                        textDecoration: 'underline'
+                                                    }}
+                                                >
+                                                    {project.title}
+                                                </button>
+                                            </td>
+                                            <td>{project.authorName}</td>
+                                            <td>{new Date(project.createdAt).toLocaleDateString('uk-UA')}</td>
+                                            <td>
+                                                {getProjectStatusBadge(project.status)}
+                                            </td>
+                                            <td>
+                                                <button
+                                                    onClick={() => handleToggleProjectPublic(project.id)}
+                                                    className={project.isPublic ? 'badge badge-in-use' : 'badge'}
+                                                    style={!project.isPublic ? {
+                                                        background: 'var(--gray-100)',
+                                                        color: 'var(--gray-700)',
+                                                        cursor: 'pointer'
+                                                    } : { cursor: 'pointer' }}
+                                                >
+                                                    {project.isPublic ? '🌐 Публічний' : '🔒 Приватний'}
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button
+                                                    onClick={() => handleArchiveProject(project.id)}
+                                                    className="btn btn-sm btn-secondary"
+                                                >
+                                                    Архівувати
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
