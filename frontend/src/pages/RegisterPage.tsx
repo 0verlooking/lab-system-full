@@ -34,7 +34,7 @@ export const RegisterPage: React.FC = () => {
                 password,
             });
             login(response.token, response.role);
-            navigate('/labs');
+            navigate('/');
         } catch (err: any) {
             setError(err.message || 'Помилка реєстрації. Спробуйте інше імʼя користувача.');
         } finally {

@@ -19,7 +19,7 @@ export const LoginPage: React.FC = () => {
         try {
             const response = await authApi.login({ username, password });
             login(response.token, response.role);
-            navigate('/labs');
+            navigate('/');
         } catch (err: any) {
             setError(err.message || 'Невірний логін або пароль');
         } finally {
