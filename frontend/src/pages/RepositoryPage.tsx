@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { labWorksApi } from '../api/labWorksApi';
 import type { LabWork } from '../types/LabWork';
 
 export default function RepositoryPage() {
+    const navigate = useNavigate();
     const [projects, setProjects] = useState<LabWork[]>([]);
     const [myProjects, setMyProjects] = useState<LabWork[]>([]);
+    const [loading, setLoading] = useState(true);
     const [showMy, setShowMy] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        loadProjects();
+        loadData();
     }, []);
 
-    const loadProjects = async () => {
+    const loadData = async () => {
         try {
             const [allProjects, myProjectsData] = await Promise.all([
                 labWorksApi.getPublished(),
@@ -29,103 +30,185 @@ export default function RepositoryPage() {
         }
     };
 
-    const displayedProjects = showMy ? myProjects : projects;
-    const filteredProjects = displayedProjects.filter(p =>
+    const displayProjects = showMy ? myProjects : projects;
+    const filteredProjects = displayProjects.filter(p =>
         p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        p.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.authorUsername.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     if (loading) {
-        return <div className="p-8">Завантаження...</div>;
+        return (
+            <div className="page">
+                <div className="loading">
+                    <div className="spinner"></div>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="p-8">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Репозиторій проектів</h1>
-                <Link
-                    to="/repository/new"
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                    + Створити проект
-                </Link>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex gap-4 mb-6 border-b">
-                <button
-                    className={`pb-2 px-4 ${!showMy ? 'border-b-2 border-blue-600 font-bold' : 'text-gray-600'}`}
-                    onClick={() => setShowMy(false)}
-                >
-                    Публічні проекти ({projects.length})
-                </button>
-                <button
-                    className={`pb-2 px-4 ${showMy ? 'border-b-2 border-blue-600 font-bold' : 'text-gray-600'}`}
-                    onClick={() => setShowMy(true)}
-                >
-                    Мої проекти ({myProjects.length})
-                </button>
-            </div>
-
-            {/* Search */}
-            <div className="mb-6">
-                <input
-                    type="text"
-                    placeholder="Пошук проектів..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full md:w-96 px-4 py-2 border rounded"
-                />
-            </div>
-
-            {/* Projects Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProjects.map(project => (
-                    <Link
-                        key={project.id}
-                        to={`/repository/${project.id}`}
-                        className="bg-white rounded-lg shadow hover:shadow-xl transition overflow-hidden"
+        <div className="page">
+            <div className="container">
+                <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                        <h1 className="page-title">📁 Репозиторій проектів</h1>
+                        <p className="page-description">Перегляд та пошук лабораторних робіт</p>
+                    </div>
+                    <button
+                        onClick={() => navigate('/repository/new')}
+                        className="btn btn-success"
+                        style={{ whiteSpace: 'nowrap' }}
                     >
-                        <div className="aspect-video bg-gray-200 flex items-center justify-center">
-                            <span className="text-gray-400">Прев'ю проекту</span>
-                        </div>
-                        <div className="p-4">
-                            <h3 className="font-bold text-lg mb-2">{project.title}</h3>
-                            <p className="text-sm text-gray-600 line-clamp-3 mb-3">
-                                {project.description}
-                            </p>
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs text-gray-500">
-                                    {project.authorUsername}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                    {new Date(project.createdAt).toLocaleDateString('uk-UA')}
-                                </span>
-                            </div>
-                            <div className="mt-3 flex gap-2">
-                                <span className={`text-xs px-2 py-1 rounded ${
-                                    project.status === 'PUBLISHED'
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-yellow-100 text-yellow-800'
-                                }`}>
-                                    {project.status}
-                                </span>
-                                {project.requiredEquipment.length > 0 && (
-                                    <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800">
-                                        {project.requiredEquipment.length} деталей
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </Link>
-                ))}
-            </div>
-
-            {filteredProjects.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
-                    Проекти не знайдено
+                        ✨ Створити проект
+                    </button>
                 </div>
-            )}
+
+                {/* Tabs and Search */}
+                <div className="card" style={{ marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '2px solid var(--gray-200)', paddingBottom: '1rem' }}>
+                        <button
+                            onClick={() => setShowMy(false)}
+                            className={showMy ? 'btn btn-secondary btn-sm' : 'btn btn-primary btn-sm'}
+                        >
+                            🌐 Публічні проекти ({projects.length})
+                        </button>
+                        <button
+                            onClick={() => setShowMy(true)}
+                            className={showMy ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'}
+                        >
+                            📂 Мої проекти ({myProjects.length})
+                        </button>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Пошук проектів</label>
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="🔍 Назва, опис або автор..."
+                            className="form-input"
+                        />
+                    </div>
+                </div>
+
+                {/* Results Count */}
+                {searchQuery && (
+                    <div style={{
+                        marginBottom: '1.5rem',
+                        padding: '1rem',
+                        background: 'white',
+                        borderRadius: '10px',
+                        boxShadow: 'var(--shadow)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                    }}>
+                        <span style={{ fontWeight: '600', color: 'var(--primary-600)' }}>
+                            Знайдено: {filteredProjects.length}
+                        </span>
+                        <span style={{ color: 'var(--gray-500)' }}>з {displayProjects.length} проектів</span>
+                    </div>
+                )}
+
+                {/* Projects Grid */}
+                {filteredProjects.length === 0 ? (
+                    <div className="empty-state">
+                        <div className="empty-state-icon">🔍</div>
+                        <h3 className="empty-state-title">
+                            {searchQuery ? 'Нічого не знайдено' : 'Немає проектів'}
+                        </h3>
+                        <p className="empty-state-description">
+                            {searchQuery
+                                ? 'Спробуйте змінити критерії пошуку'
+                                : showMy
+                                ? 'Створіть свій перший проект!'
+                                : 'Поки що немає публічних проектів'}
+                        </p>
+                        {showMy && !searchQuery && (
+                            <button
+                                onClick={() => navigate('/repository/new')}
+                                className="btn btn-primary"
+                                style={{ marginTop: '1rem' }}
+                            >
+                                ✨ Створити проект
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-3">
+                        {filteredProjects.map(project => (
+                            <Link key={project.id} to={`/repository/${project.id}`} style={{ textDecoration: 'none' }}>
+                                <div className="card" style={{ height: '100%' }}>
+                                    {/* Preview Image */}
+                                    <div style={{
+                                        width: '100%',
+                                        aspectRatio: '16/9',
+                                        background: 'linear-gradient(135deg, var(--primary-100), var(--primary-200))',
+                                        borderRadius: '10px',
+                                        marginBottom: '1.25rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '2px solid var(--primary-200)'
+                                    }}>
+                                        <span style={{ fontSize: '3rem' }}>📊</span>
+                                    </div>
+
+                                    {/* Project Info */}
+                                    <h3 style={{ fontWeight: '700', fontSize: '1.125rem', marginBottom: '0.75rem', color: 'var(--gray-800)' }}>
+                                        {project.title}
+                                    </h3>
+                                    <p style={{
+                                        fontSize: '0.875rem',
+                                        color: 'var(--gray-600)',
+                                        marginBottom: '1rem',
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 3,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                        lineHeight: '1.5'
+                                    }}>
+                                        {project.description || 'Без опису'}
+                                    </p>
+
+                                    {/* Meta Info */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem', color: 'var(--gray-600)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <span>👤</span>
+                                            <span className="badge badge-approved" style={{ fontSize: '0.75rem' }}>
+                                                {project.authorUsername}
+                                            </span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <span>📅</span>
+                                            <span>{new Date(project.createdAt).toLocaleDateString('uk-UA')}</span>
+                                        </div>
+                                        {project.requiredEquipment.length > 0 && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <span>🔧</span>
+                                                <span>{project.requiredEquipment.length} деталей</span>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <span className={
+                                                project.status === 'PUBLISHED' ? 'badge badge-approved' :
+                                                project.status === 'DRAFT' ? 'badge badge-pending' :
+                                                'badge'
+                                            } style={{ fontSize: '0.75rem' }}>
+                                                {project.status === 'PUBLISHED' && '✓ Опубліковано'}
+                                                {project.status === 'DRAFT' && '⏳ Чернетка'}
+                                                {project.status === 'ARCHIVED' && '📦 Архів'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
